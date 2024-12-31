@@ -21,6 +21,7 @@ module.exports = {
         deepDarkBlue: "#111344",
         darkPurple: "#2F195F",
         blueBlack: "#0F1020",
+        whiteGrey: "#9CA3AF",
       },
     },
   },
