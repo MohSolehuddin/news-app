@@ -5,7 +5,9 @@ interface CardContainerProps {
 }
 const CardContainer = ({ children }: CardContainerProps) => {
   return (
-    <View className="w-full h-48 bg-whiteGrey rounded-md">{children}</View>
+    <View className="w-full h-fit relative bg-white pb-6 rounded-3xl flex gap-6">
+      {children}
+    </View>
   );
 };
 
