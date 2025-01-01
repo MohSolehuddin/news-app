@@ -6,13 +6,17 @@ import ModalContainer from "./ModalContainer";
 import { Text } from "react-native";
 import CustomButton from "./CustomButton";
 
-const SearchInput = ({ ...props }) => {
+interface SearchInputProps {
+  onSubmit: (text: string, ...args: any) => void;
+}
+const SearchInput = ({ onSubmit, ...props }: SearchInputProps) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View>
       <TextInput
         placeholder="Search"
+        onSubmitEditing={(e) => onSubmit(e.nativeEvent.text)}
         {...props}
         className="bg-bluishWhite border-blueBlack border-[.2px] rounded-3xl pl-16 px-6 py-4 w-full mb-6"
       />
