@@ -58,7 +58,7 @@ const index = () => {
         />
         <SearchInput onSubmit={handleSearch} />
       </View>
-      <ScrollView>
+      <ScrollView className="h-4/5">
         <NewsContainer title="Latest News">
           {!activeCategory &&
             newsByCategory.map((item, index) => (
