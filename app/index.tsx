@@ -1,9 +1,9 @@
-import CardContainer from "@/components/CardContainer";
 import FilterCategories from "@/components/FilterCategories";
 import NewsCard from "@/components/NewsCard";
 import NewsContainer from "@/components/NewsContainer";
 import SafeAreaShell from "@/components/SafeAreaShell";
 import SearchInput from "@/components/SearchInput";
+import SourceCard from "@/components/SourceCard";
 import { useAppDispatch, useAppSelector } from "@/redux/features/hooks";
 import {
   fetchAllSources,
@@ -51,23 +51,28 @@ const index = () => {
         <SearchInput onSubmit={handleSearch} />
       </View>
       <ScrollView className="h-4/5">
-        <NewsContainer title="Latest News">
-          {!activeCategory &&
-            newsByCategory.map((item, index) => (
-              <NewsCard key={index} newsItem={item}>
-                <Text>{item.title}</Text>
-              </NewsCard>
-            ))}
+        <NewsContainer
+          title={
+            activeCategory
+              ? `Source in category ${activeCategory}`
+              : "Latest News"
+          }>
           {!activeCategory && (
-            <Text>For the latest news, only showing 20 news</Text>
+            <>
+              {newsByCategory.map((item, index) => (
+                <NewsCard key={index} newsItem={item}>
+                  <Text>{item.title}</Text>
+                </NewsCard>
+              ))}
+              <Text>For the latest news, only showing 20 news</Text>
+            </>
           )}
+
           {activeCategory &&
             sources
               .filter((item) => item.category === activeCategory)
               .map((item, index) => (
-                <CardContainer key={index}>
-                  <Text>{item.name}</Text>
-                </CardContainer>
+                <SourceCard key={index} name={item.name} />
               ))}
         </NewsContainer>
       </ScrollView>
