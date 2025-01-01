@@ -37,17 +37,9 @@ const index = () => {
   }, []);
 
   const handleSearch = (text: string) => {
+    setActiveCategory("");
     dispatch(searchNews(text));
   };
-  // useEffect(() => {
-  //   if (activeCategory) {
-  //     dispatch(fetchNewsByCategory(activeCategory));
-  //   }
-  // }, [activeCategory]);
-
-  // useEffect(() => {
-  //   console.log(newsByCategory);
-  // }, [newsByCategory]);
   return (
     <SafeAreaShell isScrollView={false}>
       <View className="fixed top-0 left-0 z-50 h-36 w-full">
@@ -66,6 +58,9 @@ const index = () => {
                 <Text>{item.title}</Text>
               </NewsCard>
             ))}
+          {!activeCategory && (
+            <Text>For the latest news, only showing 20 news</Text>
+          )}
           {activeCategory &&
             sources
               .filter((item) => item.category === activeCategory)
