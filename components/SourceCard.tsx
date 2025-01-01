@@ -1,15 +1,16 @@
+import { SourceInterface } from "@/redux/features/sourceInterface";
 import CardContainer from "./CardContainer";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 interface sourceInterface {
-  name: string;
+  source: SourceInterface;
 }
 
-const SourceCard = ({ name }: sourceInterface) => {
+const SourceCard = ({ source }: sourceInterface) => {
   return (
     <CardContainer>
-      <View className="pt-6 px-6">
-        <Text className="text-xl font-bold text-blueBlack">{name}</Text>
-      </View>
+      <TouchableOpacity className="pt-6 px-6">
+        <Text className="text-xl font-bold text-blueBlack">{source.name}</Text>
+      </TouchableOpacity>
     </CardContainer>
   );
 };

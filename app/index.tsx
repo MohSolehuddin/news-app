@@ -71,9 +71,7 @@ const index = () => {
           {activeCategory &&
             sources
               .filter((item) => item.category === activeCategory)
-              .map((item, index) => (
-                <SourceCard key={index} name={item.name} />
-              ))}
+              .map((item, index) => <SourceCard key={index} source={item} />)}
         </NewsContainer>
       </ScrollView>
     </SafeAreaShell>
