@@ -1,13 +1,13 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
 });
 
 axiosInstance.interceptors.request.use(
   (config: any) => {
     console.log("url when request", config.baseURL + config.url);
-    config.headers.Authorization = `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`;
+    config.headers.Authorization = `Bearer ${process.env.EXPO_PUBLIC_API_KEY}`;
     return config;
   },
   (error) => Promise.reject(error)
