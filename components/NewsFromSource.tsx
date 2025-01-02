@@ -43,6 +43,7 @@ const NewsFromSource = () => {
           <NewsCard key={index} newsItem={item} />
         ))}
         {loading && <Text>Loading...</Text>}
+        {isPagingLimit && <Text className="text-center">No more news</Text>}
       </NewsContainer>
     </ScrollView>
   );
