@@ -44,23 +44,70 @@ export const searchNews = createAsyncThunk(
     return response.data;
   }
 );
+export const fetchMoreNewsInCountry = createAsyncThunk(
+  "news/fetchMoreNewsInCountry",
+  async (page: number, thunkAPI) => {
+    const response = await axiosInstance.get(
+      `/top-headlines?country=${country}&page=${page}`
+    );
+    console.log(response.data);
+    return response.data;
+  }
+);
+
+interface fetchMoreNewsInterface {
+  pages: number;
+  source: string;
+}
+export const fetchMoreNews = createAsyncThunk(
+  "news/fetchMoreNews",
+  async ({ pages, source }: fetchMoreNewsInterface, thunkAPI) => {
+    const response = await axiosInstance.get(
+      `/top-headlines?sources=${source}&page=${++pages}`
+    );
+    console.log(response.data);
+    return response.data;
+  }
+);
+export const fetchNewsFromSource = createAsyncThunk(
+  "news/fetchNewsFromSource",
+  async ({ pages, source }: fetchMoreNewsInterface, thunkAPI) => {
+    const response = await axiosInstance.get(
+      `/top-headlines?sources=${source}&page=${++pages}`
+    );
+    console.log(response.data);
+    return response.data;
+  }
+);
 
 interface NewsState {
   newsByCategory: ArticlesInterface[];
+  newsInSelectedSource: ArticlesInterface[];
   sources: SourceInterface[];
+  sourceName: string;
   loading: statusType;
+  selectedSource: string;
+  pages: number;
 }
 
 const initialState: NewsState = {
   newsByCategory: [],
+  newsInSelectedSource: [],
   sources: [],
+  sourceName: "",
+  pages: 0,
+  selectedSource: "",
   loading: "idle",
 };
 
 const newsSlice = createSlice({
   name: "news",
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedSource: (state, action: PayloadAction<string>) => {
+      state.selectedSource = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchNewsByCategory.pending, (state) => {
@@ -114,8 +161,50 @@ const newsSlice = createSlice({
       )
       .addCase(searchNews.rejected, (state) => {
         state.loading = "failed";
+      })
+      .addCase(fetchMoreNewsInCountry.pending, (state) => {
+        state.loading = "pending";
+      })
+      .addCase(
+        fetchMoreNewsInCountry.fulfilled,
+        (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
+          state.newsByCategory = action.payload.articles;
+          state.pages += 1;
+          state.loading = "succeeded";
+        }
+      )
+      .addCase(fetchMoreNewsInCountry.rejected, (state) => {
+        state.loading = "failed";
+      })
+      .addCase(
+        fetchMoreNews.pending,
+        (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
+          state.loading = "succeeded";
+        }
+      )
+      .addCase(
+        fetchMoreNews.fulfilled,
+        (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
+          state.newsByCategory.push(...action.payload.articles);
+          state.pages += 1;
+          state.loading = "succeeded";
+        }
+      )
+      .addCase(fetchMoreNews.rejected, (state) => {
+        state.loading = "failed";
+      })
+      .addCase(fetchNewsFromSource.pending, (state) => {
+        state.loading = "pending";
+      })
+      .addCase(fetchNewsFromSource.fulfilled, (state, action) => {
+        state.newsInSelectedSource = action.payload.articles;
+        state.loading = "succeeded";
+      })
+      .addCase(fetchNewsFromSource.rejected, (state) => {
+        state.loading = "failed";
       });
   },
 });
 
 export const { reducer: newsReducer } = newsSlice;
+export const { setSelectedSource } = newsSlice.actions;
