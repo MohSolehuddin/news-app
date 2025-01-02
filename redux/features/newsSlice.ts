@@ -12,7 +12,6 @@ export const fetchNewsByCategory = createAsyncThunk(
     const response = await axiosInstance.get(
       `/top-headlines?category=${category}`
     );
-    console.log(response.data.articles);
     return response.data;
   }
 );
@@ -21,7 +20,6 @@ export const fetchAllSources = createAsyncThunk(
   async (sources: SourceInterface[], thunkAPI) => {
     if (sources.length > 0) return sources;
     const response = await axiosInstance.get("/top-headlines/sources");
-    console.log(response.data);
     return response.data;
   }
 );
@@ -31,7 +29,6 @@ export const lastNewsInCountry = createAsyncThunk(
     const response = await axiosInstance.get(
       `/top-headlines?country=${country}`
     );
-    console.log(response.data);
     return response.data;
   }
 );
@@ -42,7 +39,6 @@ export const moreLastNewsInCountry = createAsyncThunk(
     const response = await axiosInstance.get(
       `/top-headlines?country=${country}&page=${++page}`
     );
-    console.log(response.data);
     return response.data;
   }
 );
@@ -51,7 +47,6 @@ export const searchNews = createAsyncThunk(
   "news/searchNews",
   async (query: string, thunkAPI) => {
     const response = await axiosInstance.get(`/top-headlines?q=${query}`);
-    console.log(response.data);
     return response.data;
   }
 );
@@ -61,7 +56,6 @@ export const fetchMoreNewsInCountry = createAsyncThunk(
     const response = await axiosInstance.get(
       `/top-headlines?country=${country}&page=${page}`
     );
-    console.log(response.data);
     return response.data;
   }
 );
@@ -76,7 +70,6 @@ export const fetchMoreNews = createAsyncThunk(
     const response = await axiosInstance.get(
       `/top-headlines?sources=${source}&page=${++pages}`
     );
-    console.log(response.data);
     return response.data;
   }
 );
@@ -86,7 +79,6 @@ export const fetchNewsFromSource = createAsyncThunk(
     const response = await axiosInstance.get(
       `/top-headlines?sources=${source}&page=${++pages}`
     );
-    console.log(response.data);
     return response.data;
   }
 );
@@ -96,7 +88,6 @@ export const loadMoreNewsInSource = createAsyncThunk(
     const response = await axiosInstance.get(
       `/top-headlines?sources=${source}&page=${++pages}`
     );
-    console.log(response.data);
     return response.data;
   }
 );
