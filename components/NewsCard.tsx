@@ -1,4 +1,4 @@
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import ArticlesInterface from "@/interfaces/articlesInterface";
 import CardContainer from "./CardContainer";
 const imageNotFound = require("../assets/images/undraw_photo_895y.png");
@@ -23,9 +23,14 @@ const NewsCard = ({ newsItem }: NewsCardProps) => {
         />
       )}
       <View className="bg-white px-6 z-50">
-        <Text className="text-3xl text-blueBlack font-extrabold">
+        <Text className="text-xl text-blueBlack font-semibold">
           {newsItem.title}
         </Text>
+        <TouchableOpacity className="mt-6 bg-blueBlack w-24 py-2 rounded-full">
+          <Text className="text-bluishWhite text-center text-xl font-bold">
+            Show
+          </Text>
+        </TouchableOpacity>
       </View>
     </CardContainer>
   );
