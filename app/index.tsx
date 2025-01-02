@@ -1,6 +1,8 @@
 import FilterCategories from "@/components/FilterCategories";
+import ModalContainer from "@/components/ModalContainer";
 import NewsCard from "@/components/NewsCard";
 import NewsContainer from "@/components/NewsContainer";
+import NewsFromSource from "@/components/NewsFromSource";
 import SafeAreaShell from "@/components/SafeAreaShell";
 import SearchInput from "@/components/SearchInput";
 import SourceCard from "@/components/SourceCard";
@@ -9,15 +11,21 @@ import {
   fetchAllSources,
   lastNewsInCountry,
   searchNews,
+  fetchMoreNews,
+  setSelectedSource,
+  fetchNewsFromSource,
 } from "@/redux/features/newsSlice";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-const index = () => {
+
+const Index = () => {
   const dispatch = useAppDispatch();
-  const { newsByCategory, sources } = useAppSelector(
+  const { newsByCategory, sources, pages, selectedSource } = useAppSelector(
     (state) => state.newsByCategory
   );
+  const [isModalNewsBySourceOpen, setIsModalNewsBySourceOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const categories = [
     "business",
     "entertainment",
@@ -31,6 +39,7 @@ const index = () => {
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
   };
+
   useEffect(() => {
     dispatch(fetchAllSources());
     dispatch(lastNewsInCountry());
@@ -40,6 +49,38 @@ const index = () => {
     setActiveCategory("");
     dispatch(searchNews(text));
   };
+
+  const handleSourceClick = (source: string) => {
+    dispatch(fetchMoreNews({ pages, source: selectedSource }));
+  };
+
+  const onSourceSelect = (source: string) => {
+    dispatch(setSelectedSource(source));
+  };
+
+  useEffect(() => {
+    const getNewsBySource = async () => {
+      await dispatch(fetchNewsFromSource({ pages: 0, source: selectedSource }));
+    };
+    if (selectedSource) {
+      getNewsBySource();
+      setIsModalNewsBySourceOpen(true);
+    }
+  }, [selectedSource]);
+
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const isAtBottom =
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - 20; // 20 is a buffer
+
+    if (isAtBottom && !isLoading) {
+      setIsLoading(true);
+      dispatch(fetchMoreNews({ pages, source: activeCategory })).then(() => {
+        setIsLoading(false);
+      });
+    }
+  };
+
   return (
     <SafeAreaShell isScrollView={false}>
       <View className="fixed top-0 left-0 z-50 h-36 w-full">
@@ -50,7 +91,10 @@ const index = () => {
         />
         <SearchInput onSubmit={handleSearch} />
       </View>
-      <ScrollView className="h-4/5">
+      <ScrollView
+        className="h-4/5"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}>
         <NewsContainer
           title={
             activeCategory
@@ -60,9 +104,7 @@ const index = () => {
           {!activeCategory && (
             <>
               {newsByCategory.map((item, index) => (
-                <NewsCard key={index} newsItem={item}>
-                  <Text>{item.title}</Text>
-                </NewsCard>
+                <NewsCard key={index} newsItem={item} />
               ))}
               <Text>For the latest news, only showing 20 news</Text>
             </>
@@ -71,11 +113,22 @@ const index = () => {
           {activeCategory &&
             sources
               .filter((item) => item.category === activeCategory)
-              .map((item, index) => <SourceCard key={index} source={item} />)}
+              .map((item, index) => (
+                <SourceCard
+                  key={index}
+                  source={item}
+                  onSelect={onSourceSelect}
+                />
+              ))}
         </NewsContainer>
       </ScrollView>
+      <ModalContainer
+        isOpen={isModalNewsBySourceOpen}
+        setIsOpen={setIsModalNewsBySourceOpen}>
+        <NewsFromSource />
+      </ModalContainer>
     </SafeAreaShell>
   );
 };
 
-export default index;
+export default Index;
