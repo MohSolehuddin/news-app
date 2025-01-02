@@ -98,6 +98,7 @@ interface NewsState {
   sources: SourceInterface[];
   sourceName: string;
   loading: statusType;
+  articlesActiveLink: string;
   isPagingLimit: boolean;
   selectedSource: SourceInterface;
   pages: number;
@@ -108,6 +109,7 @@ const initialState: NewsState = {
   newsInSelectedSource: [],
   sources: [],
   sourceName: "",
+  articlesActiveLink: "",
   pages: 0,
   isPagingLimit: false,
   selectedSource: {} as SourceInterface,
@@ -120,6 +122,9 @@ const newsSlice = createSlice({
   reducers: {
     setSelectedSource: (state, action: PayloadAction<SourceInterface>) => {
       state.selectedSource = action.payload;
+    },
+    setArticlesActiveLink: (state, action: PayloadAction<string>) => {
+      state.articlesActiveLink = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -285,4 +290,4 @@ const newsSlice = createSlice({
 });
 
 export const { reducer: newsReducer } = newsSlice;
-export const { setSelectedSource } = newsSlice.actions;
+export const { setSelectedSource, setArticlesActiveLink } = newsSlice.actions;
