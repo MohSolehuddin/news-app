@@ -5,8 +5,9 @@ const imageNotFound = require("../assets/images/undraw_photo_895y.png");
 
 interface NewsCardProps {
   newsItem: ArticlesInterface;
+  onPress?: (link: string) => void;
 }
-const NewsCard = ({ newsItem }: NewsCardProps) => {
+const NewsCard = ({ newsItem, onPress }: NewsCardProps) => {
   return (
     <CardContainer>
       {newsItem.urlToImage ? (
@@ -26,7 +27,9 @@ const NewsCard = ({ newsItem }: NewsCardProps) => {
         <Text className="text-xl text-blueBlack font-semibold">
           {newsItem.title}
         </Text>
-        <TouchableOpacity className="mt-6 bg-blueBlack w-24 py-2 rounded-full">
+        <TouchableOpacity
+          className="mt-6 bg-blueBlack w-24 py-2 rounded-full"
+          onPress={() => onPress?.(newsItem.url)}>
           <Text className="text-bluishWhite text-center text-xl font-bold">
             Show
           </Text>
