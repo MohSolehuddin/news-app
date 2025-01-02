@@ -1,8 +1,12 @@
 # News App
 
+## Introduction
+
+My name is Moh Solehuddin. I am a Full Stack Developer, but currently, my focus is on Front-End Development (Mobile and Web) using React Native.
+
 ## Overview
 
-This project is built using React Native for mobile application development. The app provides the latest news and user can filter by categories.
+This project is built using React Native for mobile application development. The app provides the latest news, and users can filter articles by categories.
 
 ## Installation
 
@@ -17,7 +21,7 @@ Follow these steps to set up the project on your local computer:
 1. Clone the repository:
 
    ```bash
-   git clone git@github.com:MohSolehuddin/news-app.git
+   git clone https://github.com/MohSolehuddin/news-app
    ```
 
 2. Navigate to the project directory:
@@ -34,11 +38,11 @@ Follow these steps to set up the project on your local computer:
 
 4. Create a `.env.local` file for your environment variables:
 
-   ```
+   ```bash
    touch .env.local
    ```
 
-5. Add your environment variables to `.env.local` (e.g., API keys):
+5. Add your environment variables to `.env.local`:
 
    ```env
    EXPO_PUBLIC_API_URL=https://newsapi.org/v2
@@ -53,8 +57,8 @@ Follow these steps to set up the project on your local computer:
 ## Features
 
 - Fetches the latest news from an API.
-- Filtering sources by categories
-- Automatically fetching API if user scroll to bottom
+- Filters news sources by categories.
+- Automatically fetches additional articles when the user scrolls to the bottom of the list.
 
 ## Technologies Used
 
