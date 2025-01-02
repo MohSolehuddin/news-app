@@ -21,8 +21,14 @@ import { ScrollView, Text, View } from "react-native";
 
 const Index = () => {
   const dispatch = useAppDispatch();
-  const { newsByCategory, sources, pages, selectedSource, isPagingLimit } =
-    useAppSelector((state) => state.newsByCategory);
+  const {
+    newsByCategory,
+    sources,
+    pages,
+    selectedSource,
+    isPagingLimit,
+    loading,
+  } = useAppSelector((state) => state.newsByCategory);
   const [isModalNewsBySourceOpen, setIsModalNewsBySourceOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +53,10 @@ const Index = () => {
 
   const handleSearch = (text: string) => {
     setActiveCategory("");
+    if (text.trim() === "") {
+      dispatch(lastNewsInCountry());
+      return;
+    }
     dispatch(searchNews(text));
   };
 
@@ -106,7 +116,12 @@ const Index = () => {
               {newsByCategory.map((item, index) => (
                 <NewsCard key={index} newsItem={item} />
               ))}
-              <Text>For the latest news, only showing 20 news</Text>
+              {loading == "pending" && (
+                <Text className="text-center">Loading...</Text>
+              )}
+              {isPagingLimit && (
+                <Text className="text-center">No more news</Text>
+              )}
             </>
           )}
 
