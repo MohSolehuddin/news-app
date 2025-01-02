@@ -3,13 +3,22 @@ import { useAppDispatch, useAppSelector } from "@/redux/features/hooks";
 import NewsCard from "./NewsCard";
 import { ScrollView, Text } from "react-native";
 import { useState } from "react";
-import { loadMoreNewsInSource } from "@/redux/features/newsSlice";
+import {
+  loadMoreNewsInSource,
+  setArticlesActiveLink,
+} from "@/redux/features/newsSlice";
+import { useRouter } from "expo-router";
 
 const NewsFromSource = () => {
   const dispatch = useAppDispatch();
   const { selectedSource, newsInSelectedSource, pages, isPagingLimit } =
     useAppSelector((state) => state.newsByCategory);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const onNewsButtonNewsCardClick = async (link: string) => {
+    dispatch(setArticlesActiveLink(link));
+    router.navigate("/articleWebView");
+  };
 
   const loadMoreNews = () => {
     if (!loading) {
@@ -40,7 +49,11 @@ const NewsFromSource = () => {
       scrollEventThrottle={16}>
       <NewsContainer title={`News In ${selectedSource.name}`}>
         {newsInSelectedSource.map((item, index) => (
-          <NewsCard key={index} newsItem={item} />
+          <NewsCard
+            key={index}
+            newsItem={item}
+            onPress={onNewsButtonNewsCardClick}
+          />
         ))}
         {loading && <Text>Loading...</Text>}
         {isPagingLimit && <Text className="text-center">No more news</Text>}
