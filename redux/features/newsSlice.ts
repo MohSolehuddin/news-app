@@ -18,7 +18,8 @@ export const fetchNewsByCategory = createAsyncThunk(
 );
 export const fetchAllSources = createAsyncThunk(
   "news/fetchAllSources",
-  async (thunkAPI) => {
+  async (sources: SourceInterface[], thunkAPI) => {
+    if (sources.length > 0) return sources;
     const response = await axiosInstance.get("/top-headlines/sources");
     console.log(response.data);
     return response.data;
@@ -138,8 +139,13 @@ const newsSlice = createSlice({
       .addCase(
         fetchNewsByCategory.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
+          const { articles } = action.payload;
+          articles.length < 20
+            ? (state.isPagingLimit = true)
+            : (state.isPagingLimit = false);
+          state.newsByCategory = articles;
           state.loading = "succeeded";
-          state.newsByCategory = action.payload.articles;
+          state.pages = 1;
         }
       )
       .addCase(fetchNewsByCategory.rejected, (state) => {
@@ -151,7 +157,8 @@ const newsSlice = createSlice({
       .addCase(
         fetchAllSources.fulfilled,
         (state, action: PayloadAction<{ sources: SourceInterface[] }>) => {
-          state.sources = action.payload.sources;
+          const { sources } = action.payload;
+          state.sources = sources;
           state.loading = "succeeded";
         }
       )
@@ -164,6 +171,10 @@ const newsSlice = createSlice({
       .addCase(
         lastNewsInCountry.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
+          const { articles } = action.payload;
+          articles.length < 20
+            ? (state.isPagingLimit = true)
+            : (state.isPagingLimit = false);
           state.newsByCategory = action.payload.articles;
           state.pages = 1;
           state.loading = "succeeded";
@@ -178,6 +189,11 @@ const newsSlice = createSlice({
       .addCase(
         searchNews.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
+          const { articles } = action.payload;
+          articles.length < 20
+            ? (state.isPagingLimit = true)
+            : (state.isPagingLimit = false);
+
           state.newsByCategory = action.payload.articles;
           state.loading = "succeeded";
         }
@@ -191,7 +207,12 @@ const newsSlice = createSlice({
       .addCase(
         fetchMoreNewsInCountry.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
-          state.newsByCategory = action.payload.articles;
+          const { articles } = action.payload;
+          articles.length < 20
+            ? (state.isPagingLimit = true)
+            : (state.isPagingLimit = false);
+
+          state.newsByCategory = articles;
           state.pages += 1;
           state.loading = "succeeded";
         }
@@ -206,9 +227,10 @@ const newsSlice = createSlice({
         moreLastNewsInCountry.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
           const { articles } = action.payload;
-          if (articles.length < 20) {
-            state.isPagingLimit = true;
-          }
+          articles.length < 20
+            ? (state.isPagingLimit = true)
+            : (state.isPagingLimit = false);
+
           state.newsByCategory.push(...articles);
           state.pages += 1;
           state.loading = "succeeded";
@@ -223,7 +245,12 @@ const newsSlice = createSlice({
       .addCase(
         fetchMoreNews.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
-          state.newsByCategory.push(...action.payload.articles);
+          const { articles } = action.payload;
+          articles.length < 20
+            ? (state.isPagingLimit = true)
+            : (state.isPagingLimit = false);
+
+          state.newsByCategory.push(...articles);
           state.pages += 1;
           state.loading = "succeeded";
         }
@@ -235,7 +262,12 @@ const newsSlice = createSlice({
         state.loading = "pending";
       })
       .addCase(fetchNewsFromSource.fulfilled, (state, action) => {
-        state.newsInSelectedSource = action.payload.articles;
+        const { articles } = action.payload;
+        articles.length < 20
+          ? (state.isPagingLimit = true)
+          : (state.isPagingLimit = false);
+
+        state.newsInSelectedSource = articles;
         state.pages = 1;
         state.loading = "succeeded";
       })
@@ -246,10 +278,11 @@ const newsSlice = createSlice({
         state.loading = "pending";
       })
       .addCase(loadMoreNewsInSource.fulfilled, (state, action) => {
-        const articles = action.payload;
-        if (articles.length < 20) {
-          state.isPagingLimit = true;
-        }
+        const { articles } = action.payload;
+        articles.length < 20
+          ? (state.isPagingLimit = true)
+          : (state.isPagingLimit = false);
+
         state.pages += 1;
         state.newsInSelectedSource.push(...articles);
         state.loading = "succeeded";
