@@ -47,7 +47,7 @@ const Index = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchAllSources());
+    dispatch(fetchAllSources(sources));
     dispatch(lastNewsInCountry());
   }, []);
 
@@ -99,7 +99,9 @@ const Index = () => {
           activeCategory={activeCategory}
           handleCategoryClick={handleCategoryClick}
         />
-        <SearchInput onSubmit={handleSearch} />
+        <View className="mt-6">
+          <SearchInput onSubmit={handleSearch} />
+        </View>
       </View>
       <ScrollView
         className="h-4/5"
