@@ -11,18 +11,18 @@ import {
   fetchAllSources,
   lastNewsInCountry,
   searchNews,
-  fetchMoreNews,
   setSelectedSource,
   fetchNewsFromSource,
+  moreLastNewsInCountry,
 } from "@/redux/features/newsSlice";
+import { SourceInterface } from "@/redux/features/sourceInterface";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const Index = () => {
   const dispatch = useAppDispatch();
-  const { newsByCategory, sources, pages, selectedSource } = useAppSelector(
-    (state) => state.newsByCategory
-  );
+  const { newsByCategory, sources, pages, selectedSource, isPagingLimit } =
+    useAppSelector((state) => state.newsByCategory);
   const [isModalNewsBySourceOpen, setIsModalNewsBySourceOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -50,19 +50,18 @@ const Index = () => {
     dispatch(searchNews(text));
   };
 
-  const handleSourceClick = (source: string) => {
-    dispatch(fetchMoreNews({ pages, source: selectedSource }));
-  };
-
-  const onSourceSelect = (source: string) => {
+  const onSourceSelect = (source: SourceInterface) => {
     dispatch(setSelectedSource(source));
   };
 
   useEffect(() => {
     const getNewsBySource = async () => {
-      await dispatch(fetchNewsFromSource({ pages: 0, source: selectedSource }));
+      await dispatch(
+        fetchNewsFromSource({ pages: 0, source: selectedSource.id })
+      );
     };
-    if (selectedSource) {
+    console.log(selectedSource);
+    if (selectedSource.id) {
       getNewsBySource();
       setIsModalNewsBySourceOpen(true);
     }
@@ -71,16 +70,17 @@ const Index = () => {
   const handleScroll = (event: any) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
     const isAtBottom =
-      layoutMeasurement.height + contentOffset.y >= contentSize.height - 20; // 20 is a buffer
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+
+    if (newsByCategory.length < 20 || isPagingLimit) return;
 
     if (isAtBottom && !isLoading) {
       setIsLoading(true);
-      dispatch(fetchMoreNews({ pages, source: activeCategory })).then(() => {
+      dispatch(moreLastNewsInCountry(pages)).then(() => {
         setIsLoading(false);
       });
     }
   };
-
   return (
     <SafeAreaShell isScrollView={false}>
       <View className="fixed top-0 left-0 z-50 h-36 w-full">
