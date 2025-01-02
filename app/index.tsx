@@ -14,13 +14,16 @@ import {
   setSelectedSource,
   fetchNewsFromSource,
   moreLastNewsInCountry,
+  setArticlesActiveLink,
 } from "@/redux/features/newsSlice";
 import { SourceInterface } from "@/redux/features/sourceInterface";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const Index = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const {
     newsByCategory,
     sources,
@@ -64,13 +67,17 @@ const Index = () => {
     dispatch(setSelectedSource(source));
   };
 
+  const onNewsButtonNewsCardClick = async (link: string) => {
+    dispatch(setArticlesActiveLink(link));
+    router.navigate("/articleWebView");
+  };
   useEffect(() => {
     const getNewsBySource = async () => {
       await dispatch(
         fetchNewsFromSource({ pages: 0, source: selectedSource.id })
       );
     };
-    console.log(selectedSource);
+
     if (selectedSource.id) {
       getNewsBySource();
       setIsModalNewsBySourceOpen(true);
@@ -116,7 +123,11 @@ const Index = () => {
           {!activeCategory && (
             <>
               {newsByCategory.map((item, index) => (
-                <NewsCard key={index} newsItem={item} />
+                <NewsCard
+                  key={index}
+                  newsItem={item}
+                  onPress={onNewsButtonNewsCardClick}
+                />
               ))}
               {loading == "pending" && (
                 <Text className="text-center">Loading...</Text>
