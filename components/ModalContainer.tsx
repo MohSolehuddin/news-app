@@ -12,8 +12,8 @@ const ModalContainer = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Modal visible={isOpen} animationType="slide">
-      <View className="flex flex-col gap-6 bg-white rounded-3xl p-6">
+    <Modal visible={isOpen} animationType="slide" className="bg-bluishWhite">
+      <View className="flex flex-col gap-6 bg-bluishWhite rounded-3xl p-6">
         <FontAwesome
           name="close"
           size={24}
