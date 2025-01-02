@@ -11,7 +11,7 @@ const FilterCategories = ({
 }: FilterCategoriesProps) => {
   return (
     <ScrollView className="pt-4 bg-bluishWhite h-full w-full" horizontal={true}>
-      <View className="flex flex-row gap-4 mb-6 h-full">
+      <View className="flex flex-row gap-4 mb-6 h-20 border-b-2 border-blueBlack">
         {categories.map((item) => (
           <TouchableOpacity
             className="w-24"
