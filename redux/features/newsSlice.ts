@@ -16,7 +16,6 @@ export const fetchNewsByCategory = createAsyncThunk(
     return response.data;
   }
 );
-// https://newsapi.org/v2/everything?q=apple&from=2024-12-31&to=2024-12-31&sortBy=popularity&apiKey=7d08ce04d25f400c8263be612cf5ca41
 export const fetchAllSources = createAsyncThunk(
   "news/fetchAllSources",
   async (thunkAPI) => {
@@ -30,6 +29,17 @@ export const lastNewsInCountry = createAsyncThunk(
   async (thunkAPI) => {
     const response = await axiosInstance.get(
       `/top-headlines?country=${country}`
+    );
+    console.log(response.data);
+    return response.data;
+  }
+);
+
+export const moreLastNewsInCountry = createAsyncThunk(
+  "news/moreLastNewsInCountry",
+  async (page: number, thunkAPI) => {
+    const response = await axiosInstance.get(
+      `/top-headlines?country=${country}&page=${++page}`
     );
     console.log(response.data);
     return response.data;
@@ -79,6 +89,16 @@ export const fetchNewsFromSource = createAsyncThunk(
     return response.data;
   }
 );
+export const loadMoreNewsInSource = createAsyncThunk(
+  "news/loadMoreNewsInSource",
+  async ({ pages, source }: fetchMoreNewsInterface, thunkAPI) => {
+    const response = await axiosInstance.get(
+      `/top-headlines?sources=${source}&page=${++pages}`
+    );
+    console.log(response.data);
+    return response.data;
+  }
+);
 
 interface NewsState {
   newsByCategory: ArticlesInterface[];
@@ -86,7 +106,8 @@ interface NewsState {
   sources: SourceInterface[];
   sourceName: string;
   loading: statusType;
-  selectedSource: string;
+  isPagingLimit: boolean;
+  selectedSource: SourceInterface;
   pages: number;
 }
 
@@ -96,7 +117,8 @@ const initialState: NewsState = {
   sources: [],
   sourceName: "",
   pages: 0,
-  selectedSource: "",
+  isPagingLimit: false,
+  selectedSource: {} as SourceInterface,
   loading: "idle",
 };
 
@@ -104,7 +126,7 @@ const newsSlice = createSlice({
   name: "news",
   initialState,
   reducers: {
-    setSelectedSource: (state, action: PayloadAction<string>) => {
+    setSelectedSource: (state, action: PayloadAction<SourceInterface>) => {
       state.selectedSource = action.payload;
     },
   },
@@ -143,6 +165,7 @@ const newsSlice = createSlice({
         lastNewsInCountry.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
           state.newsByCategory = action.payload.articles;
+          state.pages = 1;
           state.loading = "succeeded";
         }
       )
@@ -176,12 +199,27 @@ const newsSlice = createSlice({
       .addCase(fetchMoreNewsInCountry.rejected, (state) => {
         state.loading = "failed";
       })
+      .addCase(moreLastNewsInCountry.pending, (state) => {
+        state.loading = "pending";
+      })
       .addCase(
-        fetchMoreNews.pending,
+        moreLastNewsInCountry.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
+          const { articles } = action.payload;
+          if (articles.length < 20) {
+            state.isPagingLimit = true;
+          }
+          state.newsByCategory.push(...articles);
+          state.pages += 1;
           state.loading = "succeeded";
         }
       )
+      .addCase(moreLastNewsInCountry.rejected, (state) => {
+        state.loading = "failed";
+      })
+      .addCase(fetchMoreNews.pending, (state) => {
+        state.loading = "pending";
+      })
       .addCase(
         fetchMoreNews.fulfilled,
         (state, action: PayloadAction<{ articles: ArticlesInterface[] }>) => {
@@ -198,9 +236,25 @@ const newsSlice = createSlice({
       })
       .addCase(fetchNewsFromSource.fulfilled, (state, action) => {
         state.newsInSelectedSource = action.payload.articles;
+        state.pages = 1;
         state.loading = "succeeded";
       })
       .addCase(fetchNewsFromSource.rejected, (state) => {
+        state.loading = "failed";
+      })
+      .addCase(loadMoreNewsInSource.pending, (state) => {
+        state.loading = "pending";
+      })
+      .addCase(loadMoreNewsInSource.fulfilled, (state, action) => {
+        const articles = action.payload;
+        if (articles.length < 20) {
+          state.isPagingLimit = true;
+        }
+        state.pages += 1;
+        state.newsInSelectedSource.push(...articles);
+        state.loading = "succeeded";
+      })
+      .addCase(loadMoreNewsInSource.rejected, (state) => {
         state.loading = "failed";
       });
   },
