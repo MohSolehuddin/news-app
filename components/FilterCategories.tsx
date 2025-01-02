@@ -10,11 +10,13 @@ const FilterCategories = ({
   handleCategoryClick,
 }: FilterCategoriesProps) => {
   return (
-    <ScrollView className="pt-4 bg-bluishWhite h-full w-full" horizontal={true}>
-      <View className="flex flex-row gap-4 mb-6 h-20 border-b-2 border-blueBlack">
+    <ScrollView
+      className="bg-bluishWhite h-32 w-full border-b-2 border-blueBlack"
+      horizontal={true}>
+      <View className="flex flex-row gap-4">
         {categories.map((item) => (
           <TouchableOpacity
-            className="w-24"
+            className="w-32"
             key={item}
             onPress={() => handleCategoryClick(item)}>
             <Text className="font-bold text-center">{item}</Text>
